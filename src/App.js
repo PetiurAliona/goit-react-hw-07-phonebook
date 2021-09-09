@@ -1,19 +1,21 @@
-import {useEffect} from 'react'
+import { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
 
 import ContactForm from "./components/ContactForm/ContactForm"
 import Filter from "./components/Filter/Filter"
 import ContactsList from "./components/ContactsList/ContactsList"
 
-import { useDispatch } from 'react-redux'
-import { getContacts } from './redux/contacts/contacts-operations'
+import { getContacts } from "./redux/contacts/contacts-operations"
+import { getContactsFromState, getLoadingFromState } from "./redux/contacts/contacts-selectors"
+import LoaderSpinner from "./components/Loader/Loader"
 
 const App = () => {
+  const dispatch = useDispatch()
 
-const dispatch = useDispatch()
+  const contacts = useSelector(getContactsFromState)
+  const loading = useSelector(getLoadingFromState)
 
-useEffect(() => 
-  dispatch(getContacts())
-, [dispatch])
+  useEffect(() => dispatch(getContacts()), [dispatch])
 
   return (
     <>
@@ -21,7 +23,8 @@ useEffect(() =>
       <ContactForm />
       <h2>Contacts</h2>
       <Filter />
-      <ContactsList />
+      {contacts?.length ? <ContactsList /> : !loading && <h3>Your phonebook is empty</h3>}
+      {loading && <LoaderSpinner />}
     </>
   )
 }
